@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	texID      gfx.TexID
+	circleTex  gfx.TexID
+	starTex    gfx.TexID
 	frameRect  geom.Rect
 	mousePos   geom.Vec2
 	mouseWorld geom.Vec2
@@ -49,24 +50,26 @@ func mouse(w *gfx.Win, event gfx.MouseEvent) {
 
 func setup(w *gfx.Win) error {
 	var err error
-	texID, err = w.LoadTexture("circle.png")
+	
+	circleTex, err = w.LoadTexture("circle.png")
+	if err != nil {
+		return err
+	}
+	
+	starTex, err = w.LoadTexture("star.png")
 	return err
 }
 
 func draw(w *gfx.WinDraw) {
 	update()
 	
-	blobsSize := float32(10)
-	blobsData := make([]float32, 0, 6*8*len(blobs.pos))
 	texCoords := [4]geom.Vec2{{0, 0}, {1, 0}, {1, 1}, {0, 1}}
+	
+	blobsSize := float32(20)
+	blobsData := make([]float32, 0, 6*8*len(blobs.pos))
 
 	for i, pos := range blobs.pos {
-		verts := [4]geom.Vec2{
-			pos.Plus(geom.Vec2{-blobsSize, -blobsSize}),
-			pos.Plus(geom.Vec2{blobsSize, -blobsSize}),
-			pos.Plus(geom.Vec2{blobsSize, blobsSize}),
-			pos.Plus(geom.Vec2{-blobsSize, blobsSize}),
-		}
+		verts := geom.RectCreate(blobsSize, blobsSize, pos).Verts()
 
 		for _, j := range []int{0, 1, 2, 0, 2, 3} {
 			col := blobs.col[i]
@@ -77,9 +80,33 @@ func draw(w *gfx.WinDraw) {
 			)
 		}
 	}
+	
+	predsSize := float32(40)
+	predsData := make([]float32, 0, 6*8*len(preds.ori))
+	predsCol := gfx.Colour{1, 1, 1, 1}
+	
+	for _, ori := range preds.ori {
+		m := ori.Mat3Transform()
+		
+		verts := geom.RectCentred(predsSize, predsSize).Verts()
+		
+		for j := range verts {
+			verts[j] = m.TimesVec2(verts[j], 1).Vec2()
+		}
+		
+		for _, j := range [6]int{0, 1, 2, 0, 2, 3} {
+			predsData = append(predsData,
+				verts[j].X, verts[j].Y,
+				texCoords[j].X, texCoords[j].Y,
+				predsCol.R, predsCol.G, predsCol.B, predsCol.A,
+			)
+		}
+	}
+	
 
 	mat := worldToFrame()
-	w.DrawVertexData(blobsData, &texID, &mat)
+	w.DrawVertexData(blobsData, &circleTex, &mat)
+	w.DrawVertexData(predsData, &starTex, &mat)
 }
 
 func main() {
@@ -90,6 +117,6 @@ func main() {
 		DrawFunc:   draw,
 		ResizeFunc: size,
 		MouseFunc:  mouse,
-		Title:      "Benis",
+		Title:      "Ecosystem",
 	})
 }

@@ -12,15 +12,24 @@ const (
 	blobsCollideDist = 20
 	blobsBreedOdds   = 100
 	blobsBreedDist   = 40
+	
+	predsStart       = 3
+	predsInitialFed  = 100
+	predsEatRadius   = 30
 )
 
 var (
 	arena = geom.RectCentred(1000, 1000)
 
-	blobs, preds struct {
+	blobs struct {
 		pos []geom.Vec2
 		col []gfx.Colour
 		age []int
+	}
+	
+	preds struct {
+		ori []geom.Ori2
+		fed []int
 	}
 )
 
@@ -56,22 +65,70 @@ func addBlob(pos geom.Vec2, col gfx.Colour) {
 
 func spawnBlob() {
 	spawnPos := geom.Vec2Rand(arena)
-	if blobCollidesWithAny(spawnPos) {
-		return
+	if !blobCollidesWithAny(spawnPos) {
+		addBlob(spawnPos, randColour())
+	}
+}
+
+func killBlob(i int) {
+	end := len(blobs.pos) - 1
+	
+	if i < end {
+		blobs.pos[i] = blobs.pos[end]
+		blobs.col[i] = blobs.col[end]
+		blobs.age[i] = blobs.age[end]
 	}
 	
-	addBlob(spawnPos, randColour())
+	blobs.pos = blobs.pos[:end]
+	blobs.col = blobs.col[:end]
+	blobs.age = blobs.age[:end]
 }
+
+
+func addPred(pos geom.Vec2) {
+	preds.ori = append(preds.ori, geom.Ori2{pos.X, pos.Y, 0})
+	preds.fed = append(preds.fed, predsInitialFed)
+}
+
+func spawnPred() {
+	addPred(geom.Vec2Rand(arena))
+}
+	
 
 func start() {
 	for i := 0; i < blobsStart; i++ {
 		spawnBlob()
+	}
+	
+	for i := 0; i < predsStart; i++ {
+		spawnPred()
 	}
 }
 
 func update() {
 	if rand.Intn(blobsSpawnOdds) == 0 {
 		spawnBlob()
+	}
+	
+	/* predators move */
+	for i := range preds.ori {
+	}
+	
+	/* predators eat */
+	for i := range preds.ori {
+		pos := preds.ori[i].Vec2()
+		
+		for j := 0; j < len(blobs.pos); j++ {
+			if blobs.pos[j].Minus(pos).Len2() < predsEatRadius*predsEatRadius {
+				killBlob(j)
+				j--
+				preds.fed[i]++
+				
+				if preds.fed[i] > 100 {
+					preds.fed[i] = 100
+				}
+			}
+		}
 	}
 	
 	/* breed blobs */
@@ -85,6 +142,7 @@ func update() {
 			}
 		}
 	}
+	
 	
 	
 }
