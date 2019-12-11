@@ -18,7 +18,7 @@ var (
 )
 
 func camRect() geom.Rect {
-	return geom.RectCreate(
+	return geom.RectCentredAt(
 		frameRect.Width()*camZoom,
 		frameRect.Height()*camZoom,
 		camPos)
@@ -86,7 +86,7 @@ func draw(w *gfx.WinDraw) {
 	blobsData := make([]float32, 0, 6*8*len(blobs.pos))
 
 	for i, pos := range blobs.pos {
-		verts := geom.RectCreate(blobsSize, blobsSize, pos).Verts()
+		verts := geom.RectCentredAt(blobsSize, blobsSize, pos).Verts()
 
 		for _, j := range []int{0, 1, 2, 0, 2, 3} {
 			col := blobs.col[i]
@@ -124,6 +124,9 @@ func draw(w *gfx.WinDraw) {
 	mat := worldToFrame()
 	w.DrawVertexData(blobsData, &circleTex, &mat)
 	w.DrawVertexData(predsData, &starTex, &mat)
+	
+	
+	w.DrawText("Benis", geom.Vec2{}, 20)
 }
 
 func main() {
