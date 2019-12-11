@@ -9,6 +9,7 @@ import (
 var (
 	circleTex  gfx.TexID
 	starTex    gfx.TexID
+	text       gfx.Text
 	frameRect  geom.Rect
 	mousePos   geom.Vec2
 	mouseWorld geom.Vec2
@@ -68,6 +69,9 @@ func mouse(w *gfx.Win, event gfx.MouseEvent) {
 func setup(w *gfx.Win) error {
 	var err error
 	
+	text.SetString("benis")
+	text.SetSize(24)
+	
 	circleTex, err = w.LoadTexture("circle.png")
 	if err != nil {
 		return err
@@ -125,8 +129,7 @@ func draw(w *gfx.WinDraw) {
 	w.DrawVertexData(blobsData, &circleTex, &mat)
 	w.DrawVertexData(predsData, &starTex, &mat)
 	
-
-	w.DrawText("Bingy", geom.Vec2{}, 80)
+	w.DrawText(&text, geom.Vec2{})
 }
 
 func main() {
