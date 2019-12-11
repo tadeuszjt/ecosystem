@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/tadeuszjt/geom/geom32"
+	"github.com/tadeuszjt/geom/32"
 	"github.com/tadeuszjt/gfx"
+	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
 var (
@@ -11,6 +12,7 @@ var (
 	frameRect  geom.Rect
 	mousePos   geom.Vec2
 	mouseWorld geom.Vec2
+	mouseHeld  bool
 	camPos     geom.Vec2
 	camZoom    = float32(1)
 )
@@ -43,8 +45,23 @@ func mouse(w *gfx.Win, event gfx.MouseEvent) {
 		camPos.PlusEquals(oldPos.Minus(newPos))
 
 	case gfx.MouseMove:
+		oldMousePos := mousePos
 		mousePos = ev.Position
+		if mouseHeld {
+			camPos.PlusEquals(frameToWorld().TimesVec2(oldMousePos.Minus(mousePos), 0).Vec2())
+		}
 		mouseWorld = frameToWorld().TimesVec2(ev.Position, 1).Vec2()
+		
+	case gfx.MouseButton:
+		if ev.Button == glfw.MouseButtonLeft {
+			switch ev.Action {
+			case glfw.Press:
+				mouseHeld = true
+			case glfw.Release:
+				mouseHeld = false
+			}
+		}
+		
 	}
 }
 

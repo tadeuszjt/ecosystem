@@ -1,30 +1,35 @@
 package main
 
 import (
-	"github.com/tadeuszjt/geom/geom32"
+	"github.com/tadeuszjt/geom/32"
 	"github.com/tadeuszjt/gfx"
 	"github.com/tadeuszjt/data"
 	"math/rand"
 )
 
 const (
-	blobsStart       = 10
+	blobsStart       = 60
 	blobsCollideDist = 20
 	blobsBreedOdds   = 60
 	blobsBreedDist   = 40
 	blobsMaxAge      = 2000
 	
-	predsStart       = 3
-	predsInitialFed  = 100
+	predsStart       = 5
+	predsStartFed    = 100.
+	predsChildFed    = 20.
+	predsMaxFed      = 100.
+	predsEatPlus     = 1.6
+	predsFedBleed    = 0.2
 	predsEatRadius   = 30
-	predsSightRadius = 100
-	predsSpeed       = 0.6
+	predsSightRadius = 200
+	predsSpeed       = 2.6
+	predsBreedOdds   = 1400
 )
 
 
 
 var (
-	arena = geom.RectCentred(1000, 1000)
+	arena = geom.RectCentred(2000, 2000)
 
 	blobsT = data.Table{ &blobs.pos, &blobs.col, &blobs.age }
 	blobs struct {
@@ -33,10 +38,11 @@ var (
 		age data.SliceInt
 	}
 	
-	predsT = data.Table{ &preds.ori, &preds.fed }
+	predsT = data.Table{ &preds.ori, &preds.dir, &preds.fed }
 	preds struct {
 		ori geom.SliceOri2
-		fed data.SliceInt
+		dir geom.SliceVec2
+		fed data.SliceFloat32
 	}
 )
 
@@ -72,12 +78,11 @@ func spawnBlob() {
 }
 
 func spawnPred() {
-	spawnPos := geom.Vec2Rand(arena)
-	predsT.Append(
-		geom.Ori2{spawnPos.X, spawnPos.Y, 0},
-		predsInitialFed,
-	)
+	spawnPos := geom.Vec2Rand(arena).Ori2()
+	spawnDir := geom.Vec2RandNormal()
+	predsT.Append(spawnPos, spawnDir, float32(predsStartFed))
 }
+	
 	
 func blobsInRange(pos geom.Vec2, radius float32) (s []geom.Vec2) {
 	for _, p := range blobs.pos {
@@ -112,28 +117,60 @@ func update() {
 		}
 	}
 	
+	/* breed preds */
+	for i := range preds.ori {
+		if rand.Intn(predsBreedOdds) == 0 {
+			predsT.Append(
+				preds.ori[i].Vec2().Plus(geom.Vec2RandNormal().ScaledBy(10)).Ori2(),
+				geom.Vec2RandNormal(),
+				float32(predsChildFed),
+			)
+		}
+	}
+	
 	/* blobs die */
 	blobsT.Filter(func(i int) bool {
 		return rand.Intn(blobsMaxAge - blobs.age[i]) != 0
 	})
 	
+	/* predators die */
+	predsT.Filter(func(i int) bool {
+		preds.fed[i] -= predsFedBleed
+		return preds.fed[i] > 0.0
+	})
+	
 	/* predators move */
 	for i := range preds.ori {
 		pos := preds.ori[i].Vec2()
+		vel := preds.dir[i]
 		blobsSee := blobsInRange(pos, predsSightRadius)
 		
-		var vel geom.Vec2
 		for _, bpos := range blobsSee {
 			toBlob := bpos.Minus(pos)
 			distToBlob := toBlob.Len()
+			scalar := predsSightRadius - distToBlob
+			scalar *= scalar
 			
-			add := toBlob.Normal().ScaledBy(predsSightRadius - distToBlob)
+			add := toBlob.Normal().ScaledBy(scalar)
 			vel.PlusEquals(add)
 		}
 		
-		preds.ori[i].PlusEquals(
-			vel.Normal().ScaledBy(predsSpeed).Ori2(),
-		)
+		preds.dir[i] = preds.dir[i].Plus(vel.Normal().ScaledBy(0.1)).Normal()
+		newPos := pos.Plus(preds.dir[i].ScaledBy(predsSpeed))
+		
+		if newPos.X > arena.Max.X {
+			newPos.X = arena.Max.X
+		} else if newPos.X < arena.Min.X {
+			newPos.X = arena.Min.X
+		}
+		
+		if newPos.Y > arena.Max.Y {
+			newPos.Y = arena.Max.Y
+		} else if newPos.Y < arena.Min.Y {
+			newPos.Y = arena.Min.Y
+		}
+		
+		preds.ori[i] = newPos.Ori2()
 	}
 	
 	/* predators eat */
@@ -142,9 +179,10 @@ func update() {
 		
 		blobsT.Filter(func(j int) bool {
 			if blobs.pos[j].Minus(pos).Len2() < predsEatRadius*predsEatRadius {
-				preds.fed[i]++
-				if preds.fed[i] > 100 {
-					preds.fed[i] = 100
+				
+				preds.fed[i] += predsEatPlus
+				if preds.fed[i] > predsMaxFed {
+					preds.fed[i] = predsMaxFed
 				}
 				
 				return false
