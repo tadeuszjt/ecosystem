@@ -125,8 +125,8 @@ func draw(w *gfx.WinDraw) {
 	w.DrawVertexData(blobsData, &circleTex, &mat)
 	w.DrawVertexData(predsData, &starTex, &mat)
 	
-	
-	w.DrawText("Benis", geom.Vec2{}, 20)
+
+	w.DrawText("Bingy", geom.Vec2{}, 80)
 }
 
 func main() {
