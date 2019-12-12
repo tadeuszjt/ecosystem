@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/tadeuszjt/geom/32"
 	"github.com/tadeuszjt/gfx"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -69,8 +70,8 @@ func mouse(w *gfx.Win, event gfx.MouseEvent) {
 func setup(w *gfx.Win) error {
 	var err error
 	
-	text.SetString("benis")
-	text.SetSize(24)
+	text.SetString("good morning sir!")
+	text.SetSize(12)
 	
 	circleTex, err = w.LoadTexture("circle.png")
 	if err != nil {
@@ -129,7 +130,12 @@ func draw(w *gfx.WinDraw) {
 	w.DrawVertexData(blobsData, &circleTex, &mat)
 	w.DrawVertexData(predsData, &starTex, &mat)
 	
-	w.DrawText(&text, geom.Vec2{})
+	for i, ori := range preds.ori {
+		text.SetString(fmt.Sprintf("%f", preds.fed[i]))
+		w.DrawText(&text,
+			worldToFrame().TimesVec2(ori.Vec2().Plus(
+				geom.Vec2{0, predsSize / 2}), 1).Vec2())
+	}
 }
 
 func main() {

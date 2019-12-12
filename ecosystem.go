@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	blobsStart       = 60
+	blobsStart       = 200
 	blobsCollideDist = 20
 	blobsBreedOdds   = 60
 	blobsBreedDist   = 40
@@ -19,7 +19,7 @@ const (
 	predsChildFed    = 20.
 	predsMaxFed      = 100.
 	predsEatPlus     = 1.6
-	predsFedBleed    = 0.2
+	predsFedBleed    = 0.3
 	predsEatRadius   = 30
 	predsSightRadius = 200
 	predsSpeed       = 2.6
