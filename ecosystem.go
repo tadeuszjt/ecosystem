@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/tadeuszjt/geom/32"
-	"github.com/tadeuszjt/gfx"
-	"github.com/tadeuszjt/data"
+	"github.com/tadeuszjt/ecosystem/geom/32"
+	"github.com/tadeuszjt/ecosystem/gfx"
+	"github.com/tadeuszjt/ecosystem/data"
 	"math/rand"
 )
 

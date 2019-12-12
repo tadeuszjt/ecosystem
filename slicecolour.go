@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tadeuszjt/gfx"
+	"github.com/tadeuszjt/ecosystem/gfx"
 )
 
 type SliceColour []gfx.Colour

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/tadeuszjt/geom/32"
-	"github.com/tadeuszjt/gfx"
+	"github.com/tadeuszjt/ecosystem/geom/32"
+	"github.com/tadeuszjt/ecosystem/gfx"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
