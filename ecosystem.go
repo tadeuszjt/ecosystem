@@ -31,15 +31,15 @@ var (
 
 	blobsT = data.Table{&blobs.pos, &blobs.col, &blobs.age}
 	blobs  struct {
-		pos geom.SliceVec2
+		pos data.SliceT[geom.Vec2]
 		col data.SliceT[gfx.Colour]
 		age data.SliceT[int]
 	}
 
 	predsT = data.Table{&preds.ori, &preds.dir, &preds.fed}
 	preds  struct {
-		ori geom.SliceOri2
-		dir geom.SliceVec2
+		ori data.SliceT[geom.Ori2]
+		dir data.SliceT[geom.Vec2]
 		fed data.SliceT[float32]
 	}
 )
