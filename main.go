@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"github.com/tadeuszjt/ecosystem/geom/32"
-	"github.com/tadeuszjt/ecosystem/gfx"
 	"github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/tadeuszjt/geom/32"
+	"github.com/tadeuszjt/gfx"
 )
 
 var (
-	circleTex  gfx.TexID
-	starTex    gfx.TexID
-	text       gfx.Text
+	circleTex gfx.TexID
+	starTex   gfx.TexID
+	//text       gfx.Text
 	frameRect  geom.Rect
 	mousePos   geom.Vec2
 	mouseWorld geom.Vec2
@@ -34,8 +33,9 @@ func frameToWorld() geom.Mat3 {
 	return geom.Mat3Camera2D(frameRect, camRect())
 }
 
-func size(w, h int) {
-	frameRect = geom.RectOrigin(float32(w), float32(h))
+func size(w *gfx.Win) {
+	v := w.Size()
+	frameRect = geom.RectOrigin(float32(v.X), float32(v.Y))
 }
 
 func mouse(w *gfx.Win, event gfx.MouseEvent) {
@@ -53,7 +53,7 @@ func mouse(w *gfx.Win, event gfx.MouseEvent) {
 			camPos.PlusEquals(frameToWorld().TimesVec2(oldMousePos.Minus(mousePos), 0).Vec2())
 		}
 		mouseWorld = frameToWorld().TimesVec2(ev.Position, 1).Vec2()
-		
+
 	case gfx.MouseButton:
 		if ev.Button == glfw.MouseButtonLeft {
 			switch ev.Action {
@@ -63,30 +63,30 @@ func mouse(w *gfx.Win, event gfx.MouseEvent) {
 				mouseHeld = false
 			}
 		}
-		
+
 	}
 }
 
 func setup(w *gfx.Win) error {
 	var err error
-	
-	text.SetString("good morning sir!")
-	text.SetSize(12)
-	
-	circleTex, err = w.LoadTexture("circle.png")
+
+	//	text.SetString("good morning sir!")
+	//	text.SetSize(12)
+
+	circleTex, err = w.LoadTextureFromFile("circle.png")
 	if err != nil {
 		return err
 	}
-	
-	starTex, err = w.LoadTexture("star.png")
+
+	starTex, err = w.LoadTextureFromFile("star.png")
 	return err
 }
 
-func draw(w *gfx.WinDraw) {
+func draw(w *gfx.Win, c gfx.Canvas) {
 	update()
-	
+
 	texCoords := [4]geom.Vec2{{0, 0}, {1, 0}, {1, 1}, {0, 1}}
-	
+
 	blobsSize := float32(20)
 	blobsData := make([]float32, 0, 6*8*len(blobs.pos))
 
@@ -102,20 +102,20 @@ func draw(w *gfx.WinDraw) {
 			)
 		}
 	}
-	
+
 	predsSize := float32(40)
 	predsData := make([]float32, 0, 6*8*len(preds.ori))
 	predsCol := gfx.Colour{1, 1, 1, 1}
-	
+
 	for _, ori := range preds.ori {
 		m := ori.Mat3Transform()
-		
+
 		verts := geom.RectCentred(predsSize, predsSize).Verts()
-		
+
 		for j := range verts {
 			verts[j] = m.TimesVec2(verts[j], 1).Vec2()
 		}
-		
+
 		for _, j := range [6]int{0, 1, 2, 0, 2, 3} {
 			predsData = append(predsData,
 				verts[j].X, verts[j].Y,
@@ -124,18 +124,17 @@ func draw(w *gfx.WinDraw) {
 			)
 		}
 	}
-	
 
 	mat := worldToFrame()
-	w.DrawVertexData(blobsData, &circleTex, &mat)
-	w.DrawVertexData(predsData, &starTex, &mat)
-	
-	for i, ori := range preds.ori {
-		text.SetString(fmt.Sprintf("%f", preds.fed[i]))
-		w.DrawText(&text,
-			worldToFrame().TimesVec2(ori.Vec2().Plus(
-				geom.Vec2{0, predsSize / 2}), 1).Vec2())
-	}
+	c.Draw2DVertexData(blobsData, &circleTex, &mat)
+	c.Draw2DVertexData(predsData, &starTex, &mat)
+
+	//	for i, ori := range preds.ori {
+	//		text.SetString(fmt.Sprintf("%f", preds.fed[i]))
+	//		w.DrawText(&text,
+	//			worldToFrame().TimesVec2(ori.Vec2().Plus(
+	//				geom.Vec2{0, predsSize / 2}), 1).Vec2())
+	//	}
 }
 
 func main() {
@@ -146,6 +145,8 @@ func main() {
 		DrawFunc:   draw,
 		ResizeFunc: size,
 		MouseFunc:  mouse,
+		Width:      1024,
+		Height:     800,
 		Title:      "Ecosystem",
 	})
 }
