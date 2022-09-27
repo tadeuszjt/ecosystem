@@ -29,20 +29,25 @@ const (
 var (
 	arena = geom.RectCentred(2000, 2000)
 
-	blobsT = data.Table{&blobs.pos, &blobs.col, &blobs.age}
-	blobs  struct {
-		pos data.SliceT[geom.Vec2]
-		col data.SliceT[gfx.Colour]
-		age data.SliceT[int]
+	blobs struct {
+		data.Table
+		pos data.RowT[geom.Vec2]
+		col data.RowT[gfx.Colour]
+		age data.RowT[int]
 	}
 
-	predsT = data.Table{&preds.ori, &preds.dir, &preds.fed}
-	preds  struct {
-		ori data.SliceT[geom.Ori2]
-		dir data.SliceT[geom.Vec2]
-		fed data.SliceT[float32]
+	preds struct {
+		data.Table
+		ori data.RowT[geom.Ori2]
+		dir data.RowT[geom.Vec2]
+		fed data.RowT[float32]
 	}
 )
+
+func init() {
+	blobs.Table = data.Table{&blobs.pos, &blobs.col, &blobs.age}
+	preds.Table = data.Table{&preds.ori, &preds.dir, &preds.fed}
+}
 
 func randColour() gfx.Colour {
 	return gfx.Colour{
@@ -71,14 +76,14 @@ func blobCollidesWithAny(pos geom.Vec2) bool {
 func spawnBlob() {
 	spawnPos := geom.Vec2Rand(arena)
 	if !blobCollidesWithAny(spawnPos) {
-		blobsT.Append(spawnPos, randColour(), 0)
+		blobs.Append(spawnPos, randColour(), 0)
 	}
 }
 
 func spawnPred() {
 	spawnPos := geom.Vec2Rand(arena).Ori2()
 	spawnDir := geom.Vec2RandNormal()
-	predsT.Append(spawnPos, spawnDir, float32(predsStartFed))
+	preds.Append(spawnPos, spawnDir, float32(predsStartFed))
 }
 
 func blobsInRange(pos geom.Vec2, radius float32) (s []geom.Vec2) {
@@ -109,7 +114,7 @@ func update() {
 			childPos := pos.Plus(geom.Vec2RandNormal().ScaledBy(dist))
 
 			if arena.Contains(childPos) && !blobCollidesWithAny(childPos) {
-				blobsT.Append(childPos, blobs.col[i], 0)
+				blobs.Append(childPos, blobs.col[i], 0)
 			}
 		}
 	}
@@ -117,7 +122,7 @@ func update() {
 	/* breed preds */
 	for i := range preds.ori {
 		if rand.Intn(predsBreedOdds) == 0 {
-			predsT.Append(
+			preds.Append(
 				preds.ori[i].Vec2().Plus(geom.Vec2RandNormal().ScaledBy(10)).Ori2(),
 				geom.Vec2RandNormal(),
 				float32(predsChildFed),
@@ -126,12 +131,12 @@ func update() {
 	}
 
 	/* blobs die */
-	blobsT.Filter(func(i int) bool {
+	blobs.Filter(func(i int) bool {
 		return rand.Intn(blobsMaxAge-blobs.age[i]) != 0
 	})
 
 	/* predators die */
-	predsT.Filter(func(i int) bool {
+	preds.Filter(func(i int) bool {
 		preds.fed[i] -= predsFedBleed
 		return preds.fed[i] > 0.0
 	})
@@ -174,7 +179,7 @@ func update() {
 	for i := range preds.ori {
 		pos := preds.ori[i].Vec2()
 
-		blobsT.Filter(func(j int) bool {
+		blobs.Filter(func(j int) bool {
 			if blobs.pos[j].Minus(pos).Len2() < predsEatRadius*predsEatRadius {
 
 				preds.fed[i] += predsEatPlus
