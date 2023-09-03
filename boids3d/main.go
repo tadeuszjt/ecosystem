@@ -40,8 +40,11 @@ func mouse(w *gfx.Win, ev gfx.MouseEvent) {
 	case gfx.MouseScroll:
 	case gfx.MouseMove:
 		{
-			playerLook(e.Position.X, -e.Position.Y)
-			w.GetGlfwWindow().SetCursorPos(0, 0)
+            playerLook(e.Position.X - mouseWin.X, e.Position.Y - mouseWin.Y)
+            mouseWin.X = e.Position.X
+            mouseWin.Y = e.Position.Y
+			//playerLook(e.Position.X, -e.Position.Y)
+			//w.GetGlfwWindow().SetCursorPos(0, 0)
 		}
 	case gfx.MouseButton:
 	}

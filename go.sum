@@ -5,6 +5,7 @@ github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3/go.mod h1:VEPNJ
 github.com/go-gl/gl v0.0.0-20210905235341-f7a045908259/go.mod h1:wjpnOv6ONl2SuJSxqCPVaPZibGFdSci9HFocT9qtVYM=
 github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 h1:zDw5v7qm4yH7N8C8uWd+8Ii9rROdgWxQuGoJ9WDXxfk=
 github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6/go.mod h1:9YTyiznxEY1fVinfM7RvRcjRHbw2xLBJ3AAGIT0I4Nw=
+github.com/go-gl/glfw v0.0.0-20210727001814-0db043d8d5be h1:UVW91pfMB1GRQfVwC7//RGVbqX6Ea8jURmJhlANak1M=
 github.com/go-gl/glfw v0.0.0-20210727001814-0db043d8d5be/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b h1:GgabKamyOYguHqHjSkDACcgoPIz3w0Dis/zJ1wyHHHU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
@@ -18,6 +19,8 @@ github.com/tadeuszjt/geom v0.0.0-20221018214511-72c73bf873ee h1:V5EeN0XYwyUbmQt4
 github.com/tadeuszjt/geom v0.0.0-20221018214511-72c73bf873ee/go.mod h1:320Q0rNzJlXOHStzQnuWdBvLvhvufan2Psyt+ou3T0Y=
 github.com/tadeuszjt/gfx v0.0.0-20221018225800-b39ffa35289a h1:vZr6jrbCoOvMJKOJBt8UB+IA/d4uaonp8dU8y7D2bCg=
 github.com/tadeuszjt/gfx v0.0.0-20221018225800-b39ffa35289a/go.mod h1:20lhIpD+TjbRzvhpb+yACA9wfcIjihioahhQ3OWYBXE=
+github.com/tadeuszjt/neuralnetwork v0.0.0-20201003185015-59963148da63 h1:ujpz8QPjRE6xwCPOwtXmvUk1ijonYudG+BzlvtlZMIk=
+github.com/tadeuszjt/neuralnetwork v0.0.0-20201003185015-59963148da63/go.mod h1:3rFc58ckYxHAWG57SfMQooARKaZPeMr0Py56/xQ4/Mc=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=

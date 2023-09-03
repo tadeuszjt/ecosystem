@@ -3,10 +3,12 @@ module github.com/tadeuszjt/ecosystem
 go 1.19
 
 require (
+	github.com/go-gl/glfw v0.0.0-20210727001814-0db043d8d5be
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b
 	github.com/tadeuszjt/data v0.0.0-20221004125058-115b38c2f40e
 	github.com/tadeuszjt/geom v0.0.0-20221018214511-72c73bf873ee
 	github.com/tadeuszjt/gfx v0.0.0-20221018225800-b39ffa35289a
+	github.com/tadeuszjt/neuralnetwork v0.0.0-20201003185015-59963148da63
 )
 
 require (

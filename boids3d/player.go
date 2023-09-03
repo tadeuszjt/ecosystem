@@ -8,7 +8,7 @@ import (
 
 const (
 	playerSpeed           = 2
-	playerLookSensitivity = 0.015
+	playerLookSensitivity = 0.0015
 )
 
 var (

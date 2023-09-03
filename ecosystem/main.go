@@ -151,8 +151,8 @@ func main() {
 		DrawFunc:   draw,
 		ResizeFunc: size,
 		MouseFunc:  mouse,
-		Width:      1024,
-		Height:     800,
+		Width:      1800,
+		Height:     1000,
 		Title:      "Ecosystem",
 	})
 }
